@@ -1,10 +1,10 @@
-create table goals(
+create table if not exists goals(
     id integer primary key,
     name varchar(255),
     options varchar(255)
 );
 
-create table progress(
+create table if not exists progress(
     id integer primary key,
     date datetime,
     selected varchar(255),

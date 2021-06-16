@@ -42,8 +42,8 @@ class DBApi:
             f"{Config.DB_DIR}/{self.db_filename}.db")
         self.cursor = self.connection.cursor()
 
-        if not self._check_db_exists():
-            self.create_db()
+        # if not self._check_db_exists():
+        #     self.create_db()
 
     def _check_db_exists(self) -> bool:
         self.cursor.execute(f"SELECT name FROM {self.db_filename} "
