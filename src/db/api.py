@@ -1,5 +1,4 @@
 import sqlite3
-from typing import Iterable, Union
 
 from config import Config
 
@@ -10,9 +9,9 @@ class DBApi:
         self._init_connection()
 
     def insert(self, table: str, column_values: dict):
-        columns = ', '.join( column_values.keys() )
+        columns = ', '.join(column_values.keys())
         values = [tuple(column_values.values())]
-        placeholders = ", ".join( "?" * len(column_values.keys()) )
+        placeholders = ", ".join("?" * len(column_values.keys()))
         self.cursor.executemany(
             f"INSERT INTO {table} "
             f"({columns}) "
@@ -20,7 +19,6 @@ class DBApi:
             values
         )
         self.connection.commit()
-
 
     def fetchall(self, table: str, columns: list[str]) -> list[tuple]:
         columns_joined = ", ".join(columns)
@@ -33,7 +31,6 @@ class DBApi:
                 dict_row[column] = row[index]
             result.append(dict_row)
         return result
-
 
     def delete(self, table: str, row_id: int):
         row_id = int(row_id)
@@ -50,7 +47,7 @@ class DBApi:
 
     def _check_db_exists(self) -> bool:
         self.cursor.execute(f"SELECT name FROM {self.db_filename} "
-                             "WHERE type='table'")
+                            "WHERE type='table'")
         table_exists = self.cursor.fetchall()
         if table_exists:
             return True
