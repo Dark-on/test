@@ -4,6 +4,8 @@ from kivy.lang import Builder
 from kivy.uix.image import AsyncImage
 from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.dropdownitem import MDDropDownItem
+from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import ILeftBody, MDList, ThreeLineAvatarListItem
 # from kivymd.uix.list import ImageLeftWidget
 from kivymd.uix.toolbar import MDToolbar
@@ -12,6 +14,11 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.button import MDFloatingActionButton
 from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 from kivymd.uix.spinner import MDSpinner
+from kivy.metrics import dp
+
+from kivy.properties import StringProperty
+
+from kivymd.uix.list import OneLineIconListItem
 
 from src.movies_provider import Movie, MoviesProvider
 from config import Config
@@ -23,6 +30,8 @@ Builder.load_file(f"{Config.TEMPLATES_DIR}/moviestab.kv")
 class AsyncImageLeftWidget(ILeftBody, AsyncImage):
     pass
 
+class IconListItem(OneLineIconListItem):
+    icon = StringProperty()
 
 class MovieAdderScreen(MDScreen):
 
@@ -41,13 +50,13 @@ class MovieAdderScreen(MDScreen):
         toolbar.left_action_items = [["arrow-left", self.go_back]]
         toolbar.right_action_items = [["plus", self.add_movie]]
 
-        id_label = MDLabel(
-            text="Id: ",
+        name_label = MDLabel(
+            text="Назва цілі: ",
             halign="left",
             valign="top",
         )
-        title_label = MDLabel(
-            text="Title: ",
+        type_label = MDLabel(
+            text="Тип поля вводу: ",
             halign="left",
             valign="top",
         )
@@ -57,17 +66,41 @@ class MovieAdderScreen(MDScreen):
             valign="top",
         )
 
-        self.id_input = MDTextField()
-        self.title_input = MDTextField()
-        self.vote_input = MDTextField()
+        menu_items = [
+            {
+                "viewclass": "IconListItem",
+                "icon": "git",
+                "text": f"Item {i}",
+                "height": dp(56),
+                "on_release": lambda x=f"Item {i}": self.set_item(x),
+            } for i in range(5)
+        ]
+
+        self.type_input = MDDropdownMenu(
+            items=menu_items,
+            position="center",
+            width_mult=4,
+        )
+
+        drop = MDDropDownItem()
+        self.type_input.caller = drop
+        drop.on_release = self.type_input.open()
+        drop.text = 'Item 0'
+        drop.pos_hint={'center_x': 0.5, 'center_y': 0.5}
+
+        self.name_input = MDTextField()
 
         self.layout.add_widget(toolbar)
-        self.layout.add_widget(id_label)
-        self.layout.add_widget(self.id_input)
-        self.layout.add_widget(title_label)
-        self.layout.add_widget(self.title_input)
-        self.layout.add_widget(vote_label)
-        self.layout.add_widget(self.vote_input)
+        self.layout.add_widget(name_label)
+        self.layout.add_widget(self.name_input)
+        self.layout.add_widget(type_label)
+        self.layout.add_widget(drop)
+        # self.layout.add_widget(vote_label)
+        # self.layout.add_widget(self.vote_input)
+
+    def set_item(self, text__item):
+        print("menu")
+        self.type_input.dismiss()
 
     def go_back(self, touch):
         self.layout.clear_widgets()
