@@ -1,12 +1,14 @@
 create table goals(
-    name varchar(255) primary key,
+    id integer primary key,
+    name varchar(255),
+    options varchar(255)
 );
 
 create table progress(
     id integer primary key,
     date datetime,
     selected varchar(255),
-    raw_text text,
-    goal_name integer,
-    FOREIGN KEY(goal_name) REFERENCES goal(name)
+    note varchar(255),
+    goal_id integer,
+    FOREIGN KEY(goal_id) REFERENCES goal(id)
 );
