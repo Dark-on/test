@@ -34,16 +34,19 @@ class IconListItem(OneLineIconListItem):
 class AsyncImageLeftWidget(ILeftBody, AsyncImage):
     pass
 
-class CustomDropDown(DropDown):
 
-    def __init__(self, items=("First", "Second", "Third", "Fourth"), **kwargs):
-        super().__init__(**kwargs)
+# class CustomDropDown(DropDown):
 
-        for item in items:
-            self.add_widget(Button(text=item, size_hint_y=None, height=44, on_release=self.my_select(item)))
+#     def __init__(self, items, **kwargs):
+#         super().__init__(**kwargs)
+#         print(items)
+#         self.items = items
+#         for item in items:
+#             self.add_widget(Button(text=item, size_hint_y=None, height=44, on_release=self.my_select(item)))
 
-    def my_select(self, item):
-        return lambda x: self.select(item)
+#     def my_select(self, item):
+#         return lambda x: self.select(item)
+
 
 class GoalCreatorScreen(MDScreen):
     def __init__(self, **kwargs):
@@ -72,13 +75,23 @@ class GoalCreatorScreen(MDScreen):
             valign="top",
         )
 
-        mainbutton = Button(text = "Оберіть",
-                            size_hint = (0.5, 0.2),
-                            pos_hint = {'center_x':0.5, 'center_y':0.5})
-        # dropdown = CustomDropDown(items=("Вибір з варіантів", "Нотатка"))
-        dropdown = CustomDropDown()
-        mainbutton.bind(on_release = dropdown.open)
-        dropdown.bind(on_select = lambda instance, x: setattr(mainbutton, "text", x))
+        # mainbutton = Button(text = "Оберіть",
+        #                     size_hint = (0.5, 0.2),
+        #                     pos_hint = {'center_x':0.5, 'center_y':0.5})
+        # dropdown = CustomDropDown(items=["A", "B"])
+        # # dropdown = CustomDropDown()
+        # mainbutton.bind(on_release=dropdown.open)
+        # dropdown.bind(on_select=lambda instance, x: setattr(mainbutton, "text", x))
+
+        dropdown = DropDown()
+        items = ("Вибір з варіантів", "Нотатка")
+        for item in items:
+            btn = Button(text=item, size_hint_y=None, height=44)
+            btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+            dropdown.add_widget(btn)
+        self.mainbutton = Button(text='Оберіть (тиць)', size_hint=(0.8, 0.2))
+        self.mainbutton.bind(on_release=dropdown.open)
+        dropdown.bind(on_select=self.select_text)
 
         self.name_input = MDTextField()
 
@@ -86,10 +99,13 @@ class GoalCreatorScreen(MDScreen):
         self.layout.add_widget(name_label)
         self.layout.add_widget(self.name_input)
         self.layout.add_widget(type_label)
-        self.layout.add_widget(mainbutton)
+        self.layout.add_widget(self.mainbutton)
+
+    def select_text(self, instance, x):
+        self.mainbutton.text = x
+
 
     def set_item(self, text__item):
-        print("menu")
         self.type_input.dismiss()
 
     def go_back(self, touch):
@@ -231,7 +247,7 @@ class GoalsTab(MDBottomNavigationItem):
 
     def __init__(self, **kwargs):
         super().__init__(name="goals", text="goals",
-                         icon="goal-multiple", **kwargs)
+                         icon="note-plus", **kwargs)
 
         GoalsTab.screen_manager = ScreenManager()
         GoalsTab.screens = {
