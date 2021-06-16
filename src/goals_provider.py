@@ -3,7 +3,7 @@ import requests
 from urllib.parse import quote
 
 
-class MoviesProvider:
+class GoalsProvider:
     __slots__ = ()
 
     API_TOKEN = "ce5f874b2bf3fe1f5c508a9d84c8063a"
@@ -23,7 +23,7 @@ class MoviesProvider:
 
         movies = []
         for json_movie in json_response["results"]:
-            movies.append(Movie(
+            movies.append(Goal(
                 id_=json_movie["id"],
                 title=json_movie["title"],
                 poster_path=json_movie["poster_path"],
@@ -38,7 +38,7 @@ class MoviesProvider:
         return json_response
 
 
-class Movie:
+class Goal:
     def __init__(self, id_=None, title=None, poster_path=None,
                  vote_average=None):
         self.id_ = id_ or ""
@@ -53,7 +53,7 @@ class Movie:
     @property
     def details(self):
         if not self._details_loaded:
-            details_dict = MoviesProvider.load_details(self.id_)
+            details_dict = GoalsProvider.load_details(self.id_)
             if details_dict:
                 self._details = self.MovieDetails(**details_dict)
             else:

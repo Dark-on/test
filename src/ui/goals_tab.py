@@ -16,6 +16,10 @@ from kivymd.uix.button import MDFloatingActionButton
 from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 from kivymd.uix.list import OneLineIconListItem
 
+from kivy.uix.dropdown import DropDown
+from kivy.uix.button import Button
+from kivy.lang import Builder
+
 from src.goals_provider import Goal, GoalsProvider
 from config import Config
 
@@ -30,6 +34,16 @@ class IconListItem(OneLineIconListItem):
 class AsyncImageLeftWidget(ILeftBody, AsyncImage):
     pass
 
+class CustomDropDown(DropDown):
+
+    def __init__(self, items=("First", "Second", "Third", "Fourth"), **kwargs):
+        super().__init__(**kwargs)
+
+        for item in items:
+            self.add_widget(Button(text=item, size_hint_y=None, height=44, on_release=self.my_select(item)))
+
+    def my_select(self, item):
+        return lambda x: self.select(item)
 
 class GoalCreatorScreen(MDScreen):
     def __init__(self, **kwargs):
@@ -58,27 +72,13 @@ class GoalCreatorScreen(MDScreen):
             valign="top",
         )
 
-        menu_items = [
-            {
-                "viewclass": "IconListItem",
-                "icon": "git",
-                "text": f"Item {i}",
-                "height": dp(56),
-                "on_release": lambda x=f"Item {i}": self.set_item(x),
-            } for i in range(5)
-        ]
-
-        self.type_input = MDDropdownMenu(
-            items=menu_items,
-            position="center",
-            width_mult=4,
-        )
-
-        drop = MDDropDownItem()
-        self.type_input.caller = drop
-        drop.on_release = self.type_input.open()
-        drop.text = 'Item 0'
-        drop.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+        mainbutton = Button(text = "Оберіть",
+                            size_hint = (0.5, 0.2),
+                            pos_hint = {'center_x':0.5, 'center_y':0.5})
+        # dropdown = CustomDropDown(items=("Вибір з варіантів", "Нотатка"))
+        dropdown = CustomDropDown()
+        mainbutton.bind(on_release = dropdown.open)
+        dropdown.bind(on_select = lambda instance, x: setattr(mainbutton, "text", x))
 
         self.name_input = MDTextField()
 
@@ -86,7 +86,7 @@ class GoalCreatorScreen(MDScreen):
         self.layout.add_widget(name_label)
         self.layout.add_widget(self.name_input)
         self.layout.add_widget(type_label)
-        self.layout.add_widget(drop)
+        self.layout.add_widget(mainbutton)
 
     def set_item(self, text__item):
         print("menu")
@@ -201,8 +201,6 @@ class GoalsListScreen(MDScreen):
         self.layout = MDBoxLayout(orientation="vertical")
 
         self.scroll_view = ScrollView()
-
-        self.layout.add_widget(self.search_field)
         self.layout.add_widget(self.scroll_view)
 
         self.add_widget(self.layout)
