@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional
 
 from config import Config
 
@@ -20,10 +21,21 @@ class DBApi:
         )
         self.connection.commit()
 
-    def fetchall(self, table: str, columns: list[str]) -> list[tuple]:
+    def fetchall(self,
+                 table: str,
+                 columns: list[str],
+                 search_field: Optional[str] = None,
+                 search_value: Optional[str] = None) -> list[tuple]:
         columns_joined = ", ".join(columns)
-        self.cursor.execute(f"SELECT {columns_joined} FROM {table}")
+
+        if search_field:
+            sql_request = (f"SELECT {columns_joined} FROM {table} "
+                           f"WHERE {table}.{search_field} = \"{search_value}\"")
+        else:
+            sql_request = (f"SELECT {columns_joined} FROM {table}")
+        self.cursor.execute(sql_request)
         rows = self.cursor.fetchall()
+
         result = []
         for row in rows:
             dict_row = {}
@@ -35,6 +47,12 @@ class DBApi:
     def delete(self, table: str, row_id: int):
         row_id = int(row_id)
         self.cursor.execute(f"delete from {table} where id={row_id}")
+        self.connection.commit()
+
+    def create_db(self):
+        with open(f"{Config.SQL_SCRIPTS_DIR}/create_db.sql") as sql_script:
+            sql = sql_script.read()
+        self.cursor.executescript(sql)
         self.connection.commit()
 
     def _init_connection(self):
@@ -50,9 +68,3 @@ class DBApi:
         if table_exists:
             return True
         return False
-
-    def create_db(self):
-        with open(f"{Config.SQL_SCRIPTS_DIR}/create_db.sql") as sql_script:
-            sql = sql_script.read()
-        self.cursor.executescript(sql)
-        self.connection.commit()
