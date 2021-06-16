@@ -8,7 +8,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.bottomnavigation import MDBottomNavigation
 
 from config import Config
-from src.ui.moviestab import MoviesTab
+from src.ui.goals_tab import GoalsTab
 
 
 Builder.load_file(f"{Config.TEMPLATES_DIR}/ui.kv")
@@ -24,7 +24,7 @@ class UI(MDScreen):
         self.tabs_navigation = MDBottomNavigation()
 
         # List of tabs that will be displayed in the app
-        self.tab = MoviesTab()
+        self.tab = GoalsTab()
         self.tabs_navigation.add_widget(self.tab)
 
         self.add_widget(self.tabs_navigation)

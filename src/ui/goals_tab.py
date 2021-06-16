@@ -1,3 +1,5 @@
+from kivy.core import text
+from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
@@ -15,6 +17,12 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.button import MDFloatingActionButton
 from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 from kivymd.uix.list import OneLineIconListItem
+from kivy.uix.scrollview import ScrollView
+from kivymd.uix.selectioncontrol import MDCheckbox
+
+from kivy.uix.dropdown import DropDown
+from kivy.uix.button import Button
+from kivy.lang import Builder
 
 from src.goals_provider import Goal, GoalsProvider
 from config import Config
@@ -34,11 +42,11 @@ class AsyncImageLeftWidget(ILeftBody, AsyncImage):
 class GoalCreatorScreen(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self.layout = MDBoxLayout(orientation="vertical")
+        self.scroll_view = ScrollView(do_scroll_y=True, effect_cls='ScrollEffect')
+        self.layout = MDBoxLayout(orientation="vertical", size_hint=(1, 1.1))
         self.load_content()
-
-        self.add_widget(self.layout)
+        self.scroll_view.add_widget(self.layout)
+        self.add_widget(self.scroll_view)
 
     def load_content(self):
         self.layout.clear_widgets()
@@ -57,40 +65,57 @@ class GoalCreatorScreen(MDScreen):
             halign="left",
             valign="top",
         )
-
-        menu_items = [
-            {
-                "viewclass": "IconListItem",
-                "icon": "git",
-                "text": f"Item {i}",
-                "height": dp(56),
-                "on_release": lambda x=f"Item {i}": self.set_item(x),
-            } for i in range(5)
-        ]
-
-        self.type_input = MDDropdownMenu(
-            items=menu_items,
-            position="center",
-            width_mult=4,
+        options_label = MDLabel(
+            text="Варіанти: ",
+            halign="left",
+            valign="top",
         )
+        self.is_need_fild = False
 
-        drop = MDDropDownItem()
-        self.type_input.caller = drop
-        drop.on_release = self.type_input.open()
-        drop.text = 'Item 0'
-        drop.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+        # dropdown = DropDown()
+        # items = ("Вибір з варіантів", "Нотатка")
+        # for item in items:
+        #     btn = Button(text=item, size_hint_y=None, height=2)
+        #     btn.bind(on_release=lambda btn: dropdown.select(btn.text))
+        #     dropdown.add_widget(btn)
+        # self.mainbutton = Button(text='Оберіть (тиць)', size_hint=(0.8, 0.5))
+        # self.mainbutton.bind(on_release=dropdown.open)
+        # dropdown.bind(on_select=self.select_text)
+
+        variants_label = MDLabel(text="Вибір з варіантів")
+        notes_label = MDLabel(text="Нотатка")
+        variants_checkbox = MDCheckbox(group="1", on_press=self.variants_func)
+        notes_checkbox = MDCheckbox(group="1", on_press=self.notes_func)
 
         self.name_input = MDTextField()
+        options_input = MDTextField()
 
         self.layout.add_widget(toolbar)
         self.layout.add_widget(name_label)
         self.layout.add_widget(self.name_input)
         self.layout.add_widget(type_label)
-        self.layout.add_widget(drop)
 
-    def set_item(self, text__item):
-        print("menu")
-        self.type_input.dismiss()
+        self.layout.add_widget(variants_label)
+        self.layout.add_widget(variants_checkbox)
+        self.layout.add_widget(notes_label)
+        self.layout.add_widget(notes_checkbox)
+        self.layout.add_widget(options_label)
+        # self.layout.add_widget(self.mainbutton)
+        self.layout.add_widget(options_input)
+
+
+    # def select_text(self, instance, x):
+    #     # self.is_need_fild = True if x == "Вибір з варіантів" else False
+    #     self.mainbutton.text = x
+
+    def variants_func(self, instance):
+        self.is_need_fild=True
+
+    def notes_func(self, instance):
+        self.is_need_fild=False
+
+    # def set_item(self, text__item):
+    #     self.type_input.dismiss()
 
     def go_back(self, touch):
         self.layout.clear_widgets()
@@ -201,8 +226,6 @@ class GoalsListScreen(MDScreen):
         self.layout = MDBoxLayout(orientation="vertical")
 
         self.scroll_view = ScrollView()
-
-        self.layout.add_widget(self.search_field)
         self.layout.add_widget(self.scroll_view)
 
         self.add_widget(self.layout)
@@ -233,7 +256,7 @@ class GoalsTab(MDBottomNavigationItem):
 
     def __init__(self, **kwargs):
         super().__init__(name="goals", text="goals",
-                         icon="goal-multiple", **kwargs)
+                         icon="note-plus", **kwargs)
 
         GoalsTab.screen_manager = ScreenManager()
         GoalsTab.screens = {

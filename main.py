@@ -17,4 +17,4 @@ if __name__ == "__main__":
     db_api = DBApi("watcher")
     db_api.create_db()
     db_api.insert("goals", {"name": "run"})
-    # Lab3App().run()
+    Lab3App().run()
