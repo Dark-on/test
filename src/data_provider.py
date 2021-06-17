@@ -79,3 +79,5 @@ class DataProvider:
             search_field="name",
             search_value=goal
         )[0]["id"]
+
+dp = DataProvider()

@@ -4,12 +4,10 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
-from kivy.uix.image import AsyncImage
 from kivy.properties import StringProperty
-from kivy.metrics import dp
 from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.list import ILeftBody, MDList, ThreeLineAvatarListItem
+from kivymd.uix.list import ILeftBody, MDList, ThreeLineListItem
 from kivymd.uix.toolbar import MDToolbar
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
@@ -18,21 +16,15 @@ from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 from kivymd.uix.list import OneLineIconListItem
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.selectioncontrol import MDCheckbox
-from kivy.lang import Builder
 
-from src.data_provider import DataProvider
+from src.data_provider import dp
 from config import Config
 
 
 Builder.load_file(f"{Config.TEMPLATES_DIR}/goalstab.kv")
-dp = DataProvider()
 
 class IconListItem(OneLineIconListItem):
     icon = StringProperty()
-
-
-class AsyncImageLeftWidget(ILeftBody, AsyncImage):
-    pass
 
 
 class GoalCreatorScreen(MDScreen):
@@ -120,13 +112,8 @@ class GoalCreatorScreen(MDScreen):
 
     def add_goal(self, touch):
         dp.create_goal(self.name_input.text, self.type_goal, options=list(self.options_input.text.split(" ")))
-        # goal = Goal(
-        #     title=self.title_input.text,
-        #     vote_average=self.vote_input.text,
-        # )
-        # GoalsTab.screens["goals_list"].goals.append(goal)
-        # goals_list = GoalsTab.screens["goals_list"].goals
-        # GoalsTab.screens["goals_list"].load_goals_list(goals_list)
+        goals_list = dp.get_goals()
+        GoalsTab.screens["goals_list"].load_goals_list(goals_list)
         self.go_back(touch)
 
 
@@ -143,7 +130,6 @@ class GoalInfoContent(MDBoxLayout):
             f"[color=#707070]Status:[/color] {goal.details.status}\n"
             f"[color=#707070]Genres:[/color] {goal.details.genres}\n"
         )
-        # cover = AsyncImage(source=goal.poster_path, size_hint_y=0.4)
         info = MDLabel(
             text=text_info,
             markup=True,
@@ -189,19 +175,16 @@ class CalendarScreen(MDScreen):
         self.go_back(touch)
 
 
-class GoalListItem(ThreeLineAvatarListItem):
+class GoalListItem(ThreeLineListItem):
     """List item with the cover and short information about the goal."""
 
     def __init__(self, goal, **kwargs):
+        tertiary_text = "" if goal["type"] == "notes" else f"Options: {', '.join(goal['options'])}"
         super().__init__(text=goal["name"],
-                         secondary_text=goal["type"],
-                         tertiary_text=f"Options: {' '.join(goal['options'])}",
+                         secondary_text=f"Type: {goal['type']}",
+                         tertiary_text=tertiary_text,
                          **kwargs)
         self.goal = goal
-
-        # image = AsyncImageLeftWidget(source=self.goal.poster_path)
-
-        # self.add_widget(image)
 
     def on_release(self):
         GoalsTab.screens["calendar"].load_screen(self.goal)
@@ -227,6 +210,9 @@ class GoalsListScreen(MDScreen):
 
         self.add_widget(self.layout)
         self.add_widget(add_goal_button)
+
+        goals_list = dp.get_goals()
+        self.load_goals_list(goals_list)
 
     def load_goals_list(self, goals):
         self.scroll_view.clear_widgets()
