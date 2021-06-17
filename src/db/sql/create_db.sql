@@ -9,7 +9,7 @@ create table if not exists progress(
     id integer primary key unique,
     date datetime,
     choice varchar(255),
-    note varchar(255),
+    notes varchar(255),
     goal_id integer,
     FOREIGN KEY(goal_id) REFERENCES goal(id)
 );

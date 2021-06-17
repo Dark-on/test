@@ -1,4 +1,6 @@
 import datetime
+from typing import Optional
+from sqlite3 import IntegrityError
 
 from src.db.api import DBApi
 
@@ -17,32 +19,51 @@ class DataProvider:
     def create_goal(self, name, type, options=None):
         if options:
             options = ", ".join(options)
+
+        if type not in ("options", "notes"):
+            return False
+
         goal = {
             "name": name,
             "type": type,
             "options": options
         }
-        self.db_api.insert("goals", goal)
+        try:
+            self.db_api.insert("goals", goal)
+        except IntegrityError:
+            return False
+        return True
 
     def get_records(self, goal) -> list[dict]:
         goal_id = self._get_goal_id(goal)
         records = self.db_api.fetchall(
             "progress",
-            ("choice", "note", "date"),
+            ("choice", "notes", "date"),
             search_field="goal_id",
             search_value=goal_id
         )
         return records
 
-    def save_progress_record(self, goal:str, choice: str, note: str):
+    def save_progress_record(
+            self,
+            goal: str,
+            choice: Optional[str] = None,
+            notes: Optional[str] = None) -> bool:
+        if not any((choice, notes)):
+            return False
+
         goal_id = self._get_goal_id(goal)
         record = {
             "date": datetime.date.today(),
             "choice": choice,
-            "note": note,
+            "notes": notes,
             "goal_id": goal_id
         }
-        self.db_api.insert("progress", record)
+        try:
+            self.db_api.insert("progress", record)
+        except IntegrityError:
+            return False
+        return True
 
     def _get_goal_id(self, goal):
         return self.db_api.fetchall(
