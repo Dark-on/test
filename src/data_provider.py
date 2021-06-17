@@ -14,6 +14,10 @@ class DataProvider:
 
     def get_goals(self) -> list[dict]:
         goals = self.db_api.fetchall("goals", ("name", "type", "options"))
+        for goal in goals:
+            options = goal.get("options")
+            if options:
+                goal["options"] = options.split(", ")
         return goals
 
     def create_goal(self, name, type, options=None):
@@ -22,6 +26,9 @@ class DataProvider:
 
         if type not in ("options", "notes"):
             return False
+
+        if type == "notes":
+            options = None
 
         goal = {
             "name": name,
