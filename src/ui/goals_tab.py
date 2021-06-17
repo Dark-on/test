@@ -24,7 +24,6 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
 from kivy.lang import Builder
 
-from src.goals_provider import Goal, GoalsProvider
 from config import Config
 
 

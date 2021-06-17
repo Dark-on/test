@@ -1,7 +1,7 @@
 from kivymd.app import MDApp
 
-from src.db.api import DBApi
 from src.ui import UI
+from src.data_provider import DataProvider
 
 
 class Lab3App(MDApp):
@@ -14,7 +14,12 @@ class Lab3App(MDApp):
 
 
 if __name__ == "__main__":
-    db_api = DBApi("watcher")
-    db_api.create_db()
-    db_api.insert("goals", {"name": "run"})
-    Lab3App().run()
+    dp = DataProvider()
+    dp.create_goal("write", "notes")
+    dp.create_goal("run", "options", ["easy", "hard"])
+    dp.save_progress_record("write", choice="", note="fuck you")
+    dp.save_progress_record("run", choice="easy", note="")
+    print(dp.get_goals())
+    print(dp.get_records("run"))
+    print(dp.get_records("write"))
+    # Lab3App().run()
