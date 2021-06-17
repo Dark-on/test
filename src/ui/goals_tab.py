@@ -1,3 +1,4 @@
+from re import S
 from kivy.core import text
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager
@@ -8,8 +9,6 @@ from kivy.properties import StringProperty
 from kivy.metrics import dp
 from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.dropdownitem import MDDropDownItem
-from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.list import ILeftBody, MDList, ThreeLineAvatarListItem
 from kivymd.uix.toolbar import MDToolbar
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -19,16 +18,14 @@ from kivymd.uix.bottomnavigation import MDBottomNavigationItem
 from kivymd.uix.list import OneLineIconListItem
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.selectioncontrol import MDCheckbox
-
-from kivy.uix.dropdown import DropDown
-from kivy.uix.button import Button
 from kivy.lang import Builder
 
+from src.data_provider import DataProvider
 from config import Config
 
 
 Builder.load_file(f"{Config.TEMPLATES_DIR}/goalstab.kv")
-
+dp = DataProvider()
 
 class IconListItem(OneLineIconListItem):
     icon = StringProperty()
@@ -87,7 +84,7 @@ class GoalCreatorScreen(MDScreen):
         notes_checkbox = MDCheckbox(group="1", on_press=self.notes_func)
 
         self.name_input = MDTextField()
-        options_input = MDTextField()
+        self.options_input = MDTextField()
 
         self.layout.add_widget(toolbar)
         self.layout.add_widget(name_label)
@@ -100,7 +97,7 @@ class GoalCreatorScreen(MDScreen):
         self.layout.add_widget(notes_checkbox)
         self.layout.add_widget(options_label)
         # self.layout.add_widget(self.mainbutton)
-        self.layout.add_widget(options_input)
+        self.layout.add_widget(self.options_input)
 
 
     # def select_text(self, instance, x):
@@ -108,10 +105,10 @@ class GoalCreatorScreen(MDScreen):
     #     self.mainbutton.text = x
 
     def variants_func(self, instance):
-        self.is_need_fild=True
+        self.type_goal="options"
 
     def notes_func(self, instance):
-        self.is_need_fild=False
+        self.type_goal="notes"
 
     # def set_item(self, text__item):
     #     self.type_input.dismiss()
@@ -122,13 +119,14 @@ class GoalCreatorScreen(MDScreen):
         self.manager.switch_to(GoalsTab.screens["goals_list"])
 
     def add_goal(self, touch):
-        goal = Goal(
-            title=self.title_input.text,
-            vote_average=self.vote_input.text,
-        )
-        GoalsTab.screens["goals_list"].goals.append(goal)
-        goals_list = GoalsTab.screens["goals_list"].goals
-        GoalsTab.screens["goals_list"].load_goals_list(goals_list)
+        dp.create_goal(self.name_input.text, self.type_goal, options=list(self.options_input.text.split(" ")))
+        # goal = Goal(
+        #     title=self.title_input.text,
+        #     vote_average=self.vote_input.text,
+        # )
+        # GoalsTab.screens["goals_list"].goals.append(goal)
+        # goals_list = GoalsTab.screens["goals_list"].goals
+        # GoalsTab.screens["goals_list"].load_goals_list(goals_list)
         self.go_back(touch)
 
 
@@ -145,7 +143,7 @@ class GoalInfoContent(MDBoxLayout):
             f"[color=#707070]Status:[/color] {goal.details.status}\n"
             f"[color=#707070]Genres:[/color] {goal.details.genres}\n"
         )
-        cover = AsyncImage(source=goal.poster_path, size_hint_y=0.4)
+        # cover = AsyncImage(source=goal.poster_path, size_hint_y=0.4)
         info = MDLabel(
             text=text_info,
             markup=True,
@@ -154,7 +152,7 @@ class GoalInfoContent(MDBoxLayout):
             size_hint_y=1
         )
 
-        self.add_widget(cover)
+        # self.add_widget(cover)
         self.add_widget(info)
 
 
@@ -195,15 +193,15 @@ class GoalListItem(ThreeLineAvatarListItem):
     """List item with the cover and short information about the goal."""
 
     def __init__(self, goal, **kwargs):
-        super().__init__(text=goal.title,
-                         secondary_text=str(goal.id_),
-                         tertiary_text=f"Vote average: {goal.vote_average}",
+        super().__init__(text=goal["name"],
+                         secondary_text=goal["type"],
+                         tertiary_text=f"Options: {' '.join(goal['options'])}",
                          **kwargs)
         self.goal = goal
 
-        image = AsyncImageLeftWidget(source=self.goal.poster_path)
+        # image = AsyncImageLeftWidget(source=self.goal.poster_path)
 
-        self.add_widget(image)
+        # self.add_widget(image)
 
     def on_release(self):
         GoalsTab.screens["calendar"].load_screen(self.goal)
