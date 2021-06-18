@@ -4,7 +4,7 @@ from src.ui import UI
 from src.data_provider import DataProvider
 
 
-class Lab3App(MDApp):
+class WatcherApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.title = "Watcher"
@@ -22,4 +22,4 @@ if __name__ == "__main__":
     # print(dp.get_goals())
     # print(dp.get_records("run"))
     # print(dp.get_records("write"))
-    Lab3App().run()
+    WatcherApp().run()

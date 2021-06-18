@@ -44,7 +44,7 @@ class RecordTab(MDBottomNavigationItem):
             name_label = MDLabel(
                 text=name,
                 theme_text_color="Custom",
-                text_color=(0, 1, 0, 1),
+                text_color=(17/255, 102/255, 12/255),
                 font_style='H6',
                 halign="left",
                 valign="top",
