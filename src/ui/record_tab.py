@@ -48,6 +48,7 @@ class RecordTab(MDBottomNavigationItem):
                 font_style='H6',
                 halign="left",
                 valign="top",
+                padding_x="40"
             )
             self.layout.add_widget(name_label)
 
@@ -59,7 +60,7 @@ class RecordTab(MDBottomNavigationItem):
             else:
                 for option in options:
                     layout = MDBoxLayout()
-                    goal_label = MDLabel(text=option)
+                    goal_label = MDLabel(text=option, padding_x="20")
                     goal_checkbox = MDCheckbox(group=name, on_press=self.checkbox_func, pos_hint={'center_x': .4, 'center_y': .5})
                     layout.add_widget(goal_label)
                     layout.add_widget(goal_checkbox)

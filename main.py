@@ -7,7 +7,7 @@ from src.data_provider import DataProvider
 class Lab3App(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.title = "Drozd Svitlana IV-81"
+        self.title = "Watcher"
 
     def build(self):
         return UI()
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     # dp.create_goal("run", "options", ["easy", "hard"])
     # dp.save_progress_record("write", choice="", notes="fuck you")
     # dp.save_progress_record("run", choice="easy", notes="")
-    print(dp.get_goals())
-    print(dp.get_records("run"))
-    print(dp.get_records("write"))
+    # print(dp.get_goals())
+    # print(dp.get_records("run"))
+    # print(dp.get_records("write"))
     Lab3App().run()

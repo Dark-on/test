@@ -44,16 +44,22 @@ class GoalCreatorScreen(MDScreen):
             text="Назва цілі: ",
             halign="left",
             valign="top",
+            font_style='H6',
+            padding_x="40",
         )
         type_label = MDLabel(
             text="Тип поля вводу: ",
             halign="left",
             valign="top",
+            font_style='H6',
+            padding_x="40"
         )
         options_label = MDLabel(
             text="Варіанти: ",
             halign="left",
             valign="top",
+            font_style='H6',
+            padding_x="40"
         )
         self.is_need_fild = False
         self.name_input = MDTextField()
@@ -65,14 +71,14 @@ class GoalCreatorScreen(MDScreen):
         self.layout.add_widget(type_label)
 
         layout0 = MDBoxLayout()
-        variants_label = MDLabel(text="Вибір з варіантів")
+        variants_label = MDLabel(text="Вибір з варіантів", padding_x="20")
         variants_checkbox = MDCheckbox(group="1", on_press=self.variants_func)
         layout0.add_widget(variants_label)
         layout0.add_widget(variants_checkbox)
         self.layout.add_widget(layout0)
 
         layout1 = MDBoxLayout()
-        notes_label = MDLabel(text="Нотатка")
+        notes_label = MDLabel(text="Нотатка", padding_x="20")
         notes_checkbox = MDCheckbox(group="1", on_press=self.notes_func)
         layout1.add_widget(notes_label)
         layout1.add_widget(notes_checkbox)
