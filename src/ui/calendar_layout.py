@@ -56,7 +56,14 @@ class CalendarLayout(MDGridLayout):
             )
         for week in calendar_matrix:
             for day_number in week:
-                day_number = "" if day_number == 0 else day_number
+                if not day_number:
+                    self.add_widget(
+                        CalendarCell(
+                            text=f"",
+                            color=(1, 1, 1, 0)
+                        )
+                    )
+                    continue
                 color, record = self._get_day_color_and_record(day_number)
                 self.add_widget(
                     CalendarCell(
@@ -73,10 +80,9 @@ class CalendarLayout(MDGridLayout):
         color = (1, 1, 1, 0)
         notation = ""
         for record in records:
-            if record.get("date") == f"{self.year}-{self.month:02}-{day}":
+            if record.get("date") == f"{self.year}-{self.month:02}-{day:02}":
                 color = (0.58, 0.82, 0.56, 1)
                 notation = record.get("choice") if record.get("choice") else record.get("notes")
-                break
         return color, notation
 
     def next_month(self):
