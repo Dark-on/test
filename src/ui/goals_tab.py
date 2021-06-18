@@ -1,6 +1,3 @@
-from re import S
-from kivy.core import text
-from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
@@ -59,22 +56,6 @@ class GoalCreatorScreen(MDScreen):
             valign="top",
         )
         self.is_need_fild = False
-
-        # dropdown = DropDown()
-        # items = ("Вибір з варіантів", "Нотатка")
-        # for item in items:
-        #     btn = Button(text=item, size_hint_y=None, height=2)
-        #     btn.bind(on_release=lambda btn: dropdown.select(btn.text))
-        #     dropdown.add_widget(btn)
-        # self.mainbutton = Button(text='Оберіть (тиць)', size_hint=(0.8, 0.5))
-        # self.mainbutton.bind(on_release=dropdown.open)
-        # dropdown.bind(on_select=self.select_text)
-
-        variants_label = MDLabel(text="Вибір з варіантів")
-        notes_label = MDLabel(text="Нотатка")
-        variants_checkbox = MDCheckbox(group="1", on_press=self.variants_func)
-        notes_checkbox = MDCheckbox(group="1", on_press=self.notes_func)
-
         self.name_input = MDTextField()
         self.options_input = MDTextField()
 
@@ -83,27 +64,28 @@ class GoalCreatorScreen(MDScreen):
         self.layout.add_widget(self.name_input)
         self.layout.add_widget(type_label)
 
-        self.layout.add_widget(variants_label)
-        self.layout.add_widget(variants_checkbox)
-        self.layout.add_widget(notes_label)
-        self.layout.add_widget(notes_checkbox)
+        layout0 = MDBoxLayout()
+        variants_label = MDLabel(text="Вибір з варіантів")
+        variants_checkbox = MDCheckbox(group="1", on_press=self.variants_func)
+        layout0.add_widget(variants_label)
+        layout0.add_widget(variants_checkbox)
+        self.layout.add_widget(layout0)
+
+        layout1 = MDBoxLayout()
+        notes_label = MDLabel(text="Нотатка")
+        notes_checkbox = MDCheckbox(group="1", on_press=self.notes_func)
+        layout1.add_widget(notes_label)
+        layout1.add_widget(notes_checkbox)
+        self.layout.add_widget(layout1)
+
         self.layout.add_widget(options_label)
-        # self.layout.add_widget(self.mainbutton)
         self.layout.add_widget(self.options_input)
-
-
-    # def select_text(self, instance, x):
-    #     # self.is_need_fild = True if x == "Вибір з варіантів" else False
-    #     self.mainbutton.text = x
 
     def variants_func(self, instance):
         self.type_goal="options"
 
     def notes_func(self, instance):
         self.type_goal="notes"
-
-    # def set_item(self, text__item):
-    #     self.type_input.dismiss()
 
     def go_back(self, touch):
         self.layout.clear_widgets()

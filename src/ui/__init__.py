@@ -25,7 +25,7 @@ class UI(MDScreen):
         self.tabs_navigation = MDBottomNavigation()
 
         # List of tabs that will be displayed in the app
-        self.tabs = (GoalsTab(), RecordTab())
+        self.tabs = (RecordTab(), GoalsTab())
         for tab in self.tabs:
             self.tabs_navigation.add_widget(tab)
 
