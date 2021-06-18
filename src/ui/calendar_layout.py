@@ -5,6 +5,8 @@ from kivy.lang import Builder
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
+from kivymd.uix.snackbar import Snackbar
+from kivymd.uix.behaviors import TouchBehavior
 
 from src.data_provider import dpr
 from config import Config
@@ -13,19 +15,23 @@ from config import Config
 Builder.load_file(f"{Config.TEMPLATES_DIR}/calendar_layout.kv")
 
 
-class CalendarCell(MDBoxLayout):
-    def __init__(self, text, color, halign="center", valign="center", **kwargs):
+class CalendarCell(MDBoxLayout, TouchBehavior):
+    def __init__(self, text, color, halign="center", valign="center", descr="", **kwargs):
         super().__init__(**kwargs)
         self.md_bg_color = color
+        self.snack = Snackbar(text=descr)
         self.add_widget(
             MDLabel(
-                text=str(text),
+                text=f"{text}",
                 markup=True,
                 halign=halign,
                 valign=valign,
                 padding=(5, 5)
             )
         )
+
+    def on_long_touch(self, *args):
+        self.snack.open()
 
 
 class CalendarLayout(MDGridLayout):
@@ -51,26 +57,27 @@ class CalendarLayout(MDGridLayout):
         for week in calendar_matrix:
             for day_number in week:
                 day_number = "" if day_number == 0 else day_number
-                color, choice = self._get_day_color_and_choice(day_number)
+                color, record = self._get_day_color_and_record(day_number)
                 self.add_widget(
                     CalendarCell(
-                        text=f"{day_number}\n[b]{choice}[/b]",
+                        text=f"{day_number}\n[b]{record}[/b]",
                         color=color,
                         halign="left",
-                        valign="top"
+                        valign="top",
+                        descr=record
                     )
                 )
 
-    def _get_day_color_and_choice(self, day):
+    def _get_day_color_and_record(self, day):
         records = dpr.get_records(self.goal.get("name"))
         color = (1, 1, 1, 0)
-        choice = ""
+        notation = ""
         for record in records:
             if record.get("date") == f"{self.year}-{self.month:02}-{day}":
                 color = (0.58, 0.82, 0.56, 1)
-                choice = record.get("choice") if record.get("choice") else "Note"
+                notation = record.get("choice") if record.get("choice") else record.get("notes")
                 break
-        return color, choice
+        return color, notation
 
     def next_month(self):
         self._offset += 1
