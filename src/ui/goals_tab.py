@@ -1,3 +1,7 @@
+from datetime import date
+
+from kivy.core import text
+from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
@@ -16,6 +20,7 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 
 from src.data_provider import dpr
 from config import Config
+from src.ui.calendar_layout import CalendarLayout
 
 
 Builder.load_file(f"{Config.TEMPLATES_DIR}/goalstab.kv")
@@ -104,64 +109,46 @@ class GoalCreatorScreen(MDScreen):
         GoalsTab.screens["goals_list"].load_goals_list(goals_list)
         self.go_back(touch)
 
-
-class GoalInfoContent(MDBoxLayout):
-
-    def __init__(self, goal, **kwargs):
-        super().__init__(orientation="vertical", **kwargs)
-        text_info = (
-            f"[color=#707070]Id:[/color] {goal.id_}\n"
-            f"[color=#707070]Title:[/color] {goal.title}\n"
-            f"[color=#707070]Vote average:[/color] {goal.vote_average}\n\n"
-            f"[color=#707070]Overview:[/color] {goal.details.overview}\n"
-            f"[color=#707070]Tagline:[/color] {goal.details.tagline}\n"
-            f"[color=#707070]Status:[/color] {goal.details.status}\n"
-            f"[color=#707070]Genres:[/color] {goal.details.genres}\n"
-        )
-        info = MDLabel(
-            text=text_info,
-            markup=True,
-            halign="left",
-            valign="top",
-            size_hint_y=1
-        )
-
-        # self.add_widget(cover)
-        self.add_widget(info)
-
-
 class CalendarScreen(MDScreen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.calendar_layout = CalendarLayout(size_hint=(1, 1.2))
         scroll_view = ScrollView()
         self.layout = MDBoxLayout(orientation="vertical", size_hint=(1, 1.2))
         scroll_view.add_widget(self.layout)
         self.add_widget(scroll_view)
 
     def load_screen(self, goal):
+        self.layout.clear_widgets()
         self.goal = goal
 
-        toolbar = MDToolbar(type="top")
-        toolbar.left_action_items = [["arrow-left", self.go_back]]
-        toolbar.right_action_items = [["delete", self.delete_item]]
+        self.calendar_layout.load_content(self.goal)
+        self.current_month = f"{self.calendar_layout.year}-{self.calendar_layout.month}"
+        self.toolbar = MDToolbar(type="top", title=self.current_month)
+        self.toolbar.left_action_items = [["arrow-left", self.go_back]]
+        self.toolbar.right_action_items = [
+            ["arrow-left-drop-circle-outline", self.previous_month],
+            ["arrow-right-drop-circle-outline", self.next_month]
+        ]
 
-        content = (goal)
+        self.layout.add_widget(self.toolbar)
+        self.layout.add_widget(self.calendar_layout)
 
-        self.layout.add_widget(toolbar)
-        self.layout.add_widget(content)
+    def next_month(self, touch):
+        self.calendar_layout.next_month()
+        self.current_month = f"{self.calendar_layout.year}-{self.calendar_layout.month}"
+        self.toolbar.title = self.current_month
+
+    def previous_month(self, touch):
+        self.calendar_layout.previous_month()
+        self.current_month = f"{self.calendar_layout.year}-{self.calendar_layout.month}"
+        self.toolbar.title = self.current_month
 
     def go_back(self, touch):
         self.layout.clear_widgets()
         self.manager.transition.direction = "right"
         self.manager.switch_to(GoalsTab.screens["goals_list"])
-
-    def delete_item(self, touch):
-        GoalsTab.screens["goals_list"].goals.remove(self.goal)
-        goals_list = GoalsTab.screens["goals_list"].goals
-        GoalsTab.screens["goals_list"].load_goals_list(goals_list)
-        self.go_back(touch)
-
 
 class GoalListItem(ThreeLineListItem):
     """List item with the cover and short information about the goal."""
