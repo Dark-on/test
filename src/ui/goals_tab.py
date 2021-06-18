@@ -1,14 +1,12 @@
 from datetime import date
 
-from kivy.core import text
-from kivy.uix.label import Label
-from kivy.uix.screenmanager import ScreenManager
-from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
 from kivy.properties import StringProperty
+from kivy.uix.screenmanager import ScreenManager
+from kivy.uix.scrollview import ScrollView
 from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import MDScreen
-from kivymd.uix.list import ILeftBody, MDList, ThreeLineListItem
+from kivymd.uix.list import MDList, ThreeLineListItem
 from kivymd.uix.toolbar import MDToolbar
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
@@ -18,8 +16,8 @@ from kivymd.uix.list import OneLineIconListItem
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.selectioncontrol import MDCheckbox
 
-from src.data_provider import dpr
 from config import Config
+from src.data_provider import dpr
 from src.ui.calendar_layout import CalendarLayout
 
 
