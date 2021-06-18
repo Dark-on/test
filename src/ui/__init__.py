@@ -9,6 +9,7 @@ from kivymd.uix.bottomnavigation import MDBottomNavigation
 
 from config import Config
 from src.ui.goals_tab import GoalsTab
+from src.ui.record_tab import RecordTab
 
 
 Builder.load_file(f"{Config.TEMPLATES_DIR}/ui.kv")
@@ -24,7 +25,8 @@ class UI(MDScreen):
         self.tabs_navigation = MDBottomNavigation()
 
         # List of tabs that will be displayed in the app
-        self.tab = GoalsTab()
-        self.tabs_navigation.add_widget(self.tab)
+        self.tabs = (GoalsTab(), RecordTab())
+        for tab in self.tabs:
+            self.tabs_navigation.add_widget(tab)
 
         self.add_widget(self.tabs_navigation)

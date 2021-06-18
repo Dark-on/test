@@ -17,7 +17,7 @@ from kivymd.uix.list import OneLineIconListItem
 from kivy.uix.scrollview import ScrollView
 from kivymd.uix.selectioncontrol import MDCheckbox
 
-from src.data_provider import dp
+from src.data_provider import dpr
 from config import Config
 
 
@@ -111,8 +111,8 @@ class GoalCreatorScreen(MDScreen):
         self.manager.switch_to(GoalsTab.screens["goals_list"])
 
     def add_goal(self, touch):
-        dp.create_goal(self.name_input.text, self.type_goal, options=list(self.options_input.text.split(" ")))
-        goals_list = dp.get_goals()
+        dpr.create_goal(self.name_input.text, self.type_goal, options=list(self.options_input.text.split(" ")))
+        goals_list = dpr.get_goals()
         GoalsTab.screens["goals_list"].load_goals_list(goals_list)
         self.go_back(touch)
 
@@ -211,7 +211,7 @@ class GoalsListScreen(MDScreen):
         self.add_widget(self.layout)
         self.add_widget(add_goal_button)
 
-        goals_list = dp.get_goals()
+        goals_list = dpr.get_goals()
         self.load_goals_list(goals_list)
 
     def load_goals_list(self, goals):

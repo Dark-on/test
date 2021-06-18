@@ -80,4 +80,4 @@ class DataProvider:
             search_value=goal
         )[0]["id"]
 
-dp = DataProvider()
+dpr = DataProvider()

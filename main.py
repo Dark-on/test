@@ -15,10 +15,10 @@ class Lab3App(MDApp):
 
 if __name__ == "__main__":
     dp = DataProvider()
-    dp.create_goal("write", "notes")
-    dp.create_goal("run", "options", ["easy", "hard"])
-    dp.save_progress_record("write", choice="", notes="fuck you")
-    dp.save_progress_record("run", choice="easy", notes="")
+    # dp.create_goal("write", "notes")
+    # dp.create_goal("run", "options", ["easy", "hard"])
+    # dp.save_progress_record("write", choice="", notes="fuck you")
+    # dp.save_progress_record("run", choice="easy", notes="")
     print(dp.get_goals())
     print(dp.get_records("run"))
     print(dp.get_records("write"))
